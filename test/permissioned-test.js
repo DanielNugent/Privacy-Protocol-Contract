@@ -12,27 +12,34 @@ describe("PermissionedPrivacy contract", function () {
   });
 
   describe("Hash of Scan", function () {
-    let hashOfScan = "0x1234";
-    let hashOfScan2 = "0x12345";
+    let hashOfScan1_left = "0x1234";
+    let hashOfScan1_right = "0x5678";
+    let hashOfScan2_left = "0x2345";
+    let hashOfScan2_right = "0x6789";
 
-    it("Should add a hash of scan if Owner", async function () {
-      await privacy.registerHashOfScan(hashOfScan);
+    it("Should add a hash of scan", async function () {
+      await privacy.registerHashOfScan(hashOfScan1_left, hashOfScan1_right);
       expect(await privacy.getHashOfScans()).to.deep.equal([
-        ethers.BigNumber.from(hashOfScan),
+        [
+          ethers.BigNumber.from(hashOfScan1_left),
+          ethers.BigNumber.from(hashOfScan1_right),
+        ],
       ]);
     });
 
-    it("Shouldn't add a hash of scan if not the contract Owner", async function () {
-        const [_, addr1] = await ethers.getSigners();
-      await expect(privacy.connect(addr1).registerHashOfScan(hashOfScan2)).to.be.revertedWith(
-        "Ownable: caller is not the owner"
-      );
+    it("Shouldn't add a hashes of scan (batch) if not the contract Owner", async function () {
+      const [_, addr1] = await ethers.getSigners();
+      await expect(
+        privacy
+          .connect(addr1)
+          .batchRegisterHashOfScan([hashOfScan2_left, hashOfScan2_right])
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
     it("Should throw an error if trying to register an exists hash of scan", async function () {
-      await expect(privacy.registerHashOfScan(hashOfScan)).to.be.revertedWith(
-        "That hash of scan is already registered."
-      );
+      await expect(
+        privacy.registerHashOfScan(hashOfScan1_left, hashOfScan1_right)
+      ).to.be.revertedWith("That hash of scan is already registered.");
     });
   });
   describe("Transactions", function () {
@@ -45,12 +52,9 @@ describe("PermissionedPrivacy contract", function () {
         transaction.publicID,
         transaction.hashOfRecord
       );
-      expect(await privacy.getTransactions()).to.deep.equal([
-        [
-          ethers.BigNumber.from(transaction.publicID),
-          ethers.BigNumber.from(transaction.hashOfRecord),
-        ],
-      ]);
+      expect(await privacy.getTransactions(transaction.publicID)).to.deep.equal(
+        [ethers.BigNumber.from(transaction.hashOfRecord)]
+      );
     });
   });
   describe("Storing records", function () {

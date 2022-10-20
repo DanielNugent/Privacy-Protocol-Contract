@@ -35,11 +35,8 @@ describe("PrivacyPreserving contract", function () {
         transaction.publicID,
         transaction.hashOfRecord
       );
-      expect(await privacy.getTransactions()).to.deep.equal([
-        [
-          ethers.BigNumber.from(transaction.publicID),
-          ethers.BigNumber.from(transaction.hashOfRecord),
-        ],
+      expect(await privacy.getTransactions(transaction.publicID)).to.deep.equal([
+        ethers.BigNumber.from(transaction.hashOfRecord),
       ]);
     });
   });

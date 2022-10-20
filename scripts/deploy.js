@@ -14,7 +14,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Contract = await hre.ethers.getContractFactory("PrivacyPreserving");
+  const Contract = await hre.ethers.getContractFactory("PermissionedPrivacy");
   const contract = await Contract.deploy();
 
   await contract.deployed();

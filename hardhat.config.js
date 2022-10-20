@@ -21,10 +21,10 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 module.exports = {
   solidity: "0.8.4",
   networks: {
-    testnet: {
-      url: `https://api.s0.b.hmny.io`,
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/ffb90fe6270e42fa94c43ffe12198d3c`,
       accounts: [
-        `0x${process.env.HARMONY_TESTNET_PRIVATEKEY}`,
+        `0x${process.env.RINKEBY_TESTNET_PRIVATEKEY}`,
       ],
     },
   },

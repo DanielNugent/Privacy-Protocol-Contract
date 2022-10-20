@@ -11,14 +11,11 @@ contract PrivacyPreserving {
     event StoredRecordLocation(uint256 indexed _transactionID, string _record);
     event CreatedTransaction(uint256 indexed _publicID, uint256 _hashOfRecord);
 
-    struct Transaction {
-        uint256 publicID;
-        uint256 hashOfRecord;
-    }
-
     uint256[] internal hashOfScans;
     mapping(uint256 => bool) internal isRegistered;
-    Transaction[] internal transactions;
+
+    //map publicID -> list of hashes of records
+    mapping(uint256 => uint256[]) internal transactions;
     mapping(uint256 => string) internal transactionIDToRecord;
 
     /**
@@ -64,14 +61,15 @@ contract PrivacyPreserving {
      * @param _hashOfRecord The hash of the record
      */
     function addTransaction(uint256 _publicID, uint256 _hashOfRecord) public {
-        transactions.push(Transaction(_publicID, _hashOfRecord));
+        transactions[_publicID].push(_hashOfRecord);
         emit CreatedTransaction(_publicID, _hashOfRecord);
     }
     /**
-     * @dev Return all transactions 
-     * @return value of 'transactions'
+     * @dev Return transactions of given _publicID
+     * @param _publicID The public ID of the transactions
+     * @return value of 'transactions[_publicID]'
      */
-    function getTransactions() public view returns (Transaction[] memory){
-        return transactions;
+    function getTransactions(uint256 _publicID) public view returns (uint256[] memory){
+        return transactions[_publicID];
     }    
 }
